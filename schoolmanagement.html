@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>School Management System</title>
+  <style>
+    :root {
+      --primary: #2e8b57;
+      --secondary: #f7f7fa;
+      --accent: #ffb546;
+      --danger: #dc143c;
+      --gray: #444;
+      --paid: #28a745;
+      --partial: #ffb546;
+      --unpaid: #dc143c;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--secondary);
+      color: var(--gray);
+      margin: 0;
+      line-height: 1.6;
+    }
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 1rem 0;
+      box-shadow: 0 2px 7px 0 rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 1110;
+    }
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      max-width: 1100px;
+      margin: 0 auto;
+      align-items: center;
+      padding: 0 2rem;
+    }
+    .logo {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
+    }
+    .nav-links a {
+      color: #fff;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .nav-links a:hover, .nav-links a:focus { color: var(--accent); }
+    .menu-toggle { display: none; }
+    .dashboard {
+      max-width: 1100px;
+      margin: 2.5rem auto;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 16px 0 rgba(46, 139, 87, 0.10);
+      padding: 2rem 2.5rem;
+      position: relative;
+    }
+    h1 { font-size: 2rem; margin-bottom: 0.5rem; color: var(--primary); }
+    .dashboard-cards {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+    }
+    .card {
+      flex: 1 1 240px;
+      min-width: 220px;
+      max-width: 360px;
+      background: var(--secondary);
+      border-radius: 8px;
+      box-shadow: 0 2px 16px rgba(46,139,87,0.03);
+      padding: 1.2rem 1rem;
+      text-align: center;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .card:hover {
+      transform: translateY(-5px) scale(1.03);
+      box-shadow: 0 4px 30px 0 rgba(255, 181, 70, 0.08);
+    }
+    .card h2 { margin: 0; font-size: 1.3rem; color: var(--primary);}
+    .card p,.metrics-label { font-size: 1.1rem; margin: 0.8rem 0;}
+    .card .count { font-size: 2.4rem; font-weight: 800; color: var(--accent); margin-bottom: 0.3rem;}
+    section { margin-bottom: 2.7rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem;}
+    th, td {
+      padding: 0.7rem 0.6rem;
+      border-bottom: 1px solid #e3e3e3;
+      text-align: left;
+    }
+    th {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+    }
+    tr:hover { background: #e6ffe6; }
+    caption {
+      margin-bottom: .5rem;
+      font-size: 1.12rem;
+      font-weight: 600;
+      color: var(--primary);
+      text-align: left;
+    }
+    .btn {
+      background: var(--primary);
+      color: #fff;
+      padding: 0.6em 1.2em;
+      border: none;
+      border-radius: 5px;
+      font-size: 0.98rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background .2s;
+      margin-top: 0.4em;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn:hover, .btn:focus { background: var(--accent); color: #111; }
+    .danger { background: var(--danger);}
+    .danger:hover, .danger:focus { background: #ff4646; }
+    .form-inline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      margin-top: 1em;
+      margin-bottom: 1.2em;
+    }
+    .fees-status {
+      font-weight: bold;
+      padding: 2px 8px;
+      border-radius: 5px;
+      color: #fff;
+      font-size: 0.97em;
+      letter-spacing: 1px;
+      margin-right: 2px;
+    }
+    .status-paid { background: var(--paid);}
+    .status-partial { background: var(--partial);}
+    .status-unpaid { background: var(--unpaid);}
+    .metrics {
+      display: flex;
+      gap: 2.2rem;
+      margin-bottom: 1.2rem;
+      flex-wrap: wrap;
+      background:#fafaf8;
+      padding:0.9em 1.1em;
+      border-radius: 7px;
+      border:1px solid #e1e1e1;
+    }
+    .metrics-value { font-size:1.35em; font-weight:700; color:var(--primary);}
+    .metrics-label { margin:0;}
+    .filter-bar {
+      display: flex;
+      gap: 1em;
+      align-items: center;
+      margin: 1em 0 0.2em 0;
+    }
+    .filter-bar label {font-weight:600;}
+    .filter-select {
+      border:1px solid #ccc; padding:0.3em .5em; border-radius:5px; font-size:0.99em;
+    }
+    .receipt-link { margin-left:1em; text-decoration:underline; font-size:0.97em;}
+    .class-analytics-table {
+      margin-top:1.1em; width:100%; background:#fcfdfc; border-radius:7px; border:1px solid #e1e1e1;
+    }
+    .class-analytics-table th, .class-analytics-table td {
+      font-size: 1em; border-bottom:1px solid #ececec; padding:8px 0.6em;
+    }
+    .class-analytics-table th {
+      background: var(--primary); color:#fff;
+    }
+    .analytics-caption { color:var(--primary); font-size:1.07em; margin-bottom:.25em; }
+    .export-btn { float:right; margin-bottom:17px;}
+    .popup-bg {
+      position: fixed;
+      top:0; left:0; width:100vw; height:100vh;
+      background: rgba(60,60,60,0.38);
+      display:none; align-items: center; justify-content: center;
+      z-index: 7000;
+    }
+    .popup {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 18px rgba(46,139,87,0.20);
+      padding: 2rem 2.5rem;
+      min-width: 280px;
+      max-width: 95vw;
+      position: relative;
+    }
+    .popup h3 { margin-top:0;}
+    .popup form label { display:block; font-weight: 600; margin-top: 12px;}
+    .popup form input { width:100%; margin-top:5px; padding:0.5em; border-radius: 5px; border:1px solid #ccc;}
+    .popup .popup-close {
+      background: var(--danger);
+      color:#fff;
+      border:none;
+      border-radius:5px;
+      padding:7px 14px;
+      cursor:pointer;
+      float:right;
+      margin-top:18px;
+      font-weight:600;
+    }
+    .popup .btn { margin-top:1em;}
+    .popup .receipt-area {
+      background:#fafaf8; border:1px solid #e3e3e3; padding:0.7em 1em; border-radius:7px;
+      margin-top:1.4em; font-size:1em; color:#222;
+    }
+    .announcements {
+      background: #e9fce3;
+      border-radius: 8px;
+      padding: 1.2em;
+      box-shadow: 0 1px 6px rgba(255,181,70,0.07);
+      margin-bottom: 2em;
+    }
+    .announcement { margin-bottom: 1rem; padding-bottom: .7rem; border-bottom: 1px solid #eff7f2;}
+    .announcement:last-child { border: none; margin-bottom: 0; }
+    .announcement strong { color: var(--primary);}
+    .teacher-role {
+      font-size: 1em;
+      font-weight: 500;
+      padding: 0.2em 0.7em;
+      background: #e9fce3;
+      border-radius: 4px;
+      color: var(--primary);
+      margin-left: 0.2em;
+      display: inline-block;
+    }
+    #teacherError, #addTeacherAlert {
+      color: var(--danger);
+      font-weight: 600;
+      margin: 0.7em 0;
+      display: none;
+    }
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #28a745;
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+      z-index: 9000;
+    }
+    .toast.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .toast.error {
+      background: #dc143c;
+    }
+    @media (max-width:900px) {
+      .dashboard-cards { flex-direction: column; }
+      .dashboard { padding: 2rem 1rem;}
+      .metrics { flex-direction: column; gap:0.8em;}
+    }
+    @media (max-width:700px) {
+      .navbar {
+        flex-direction: column;
+        gap: .5rem;
+        align-items: flex-start;
+      }
+      .nav-links {
+        flex-direction: column;
+        gap: 0.6rem;
+        background: var(--primary);
+        width: 100%;
+        position: absolute;
+        top: 58px;
+        left: -100%;
+        transition: left 0.25s;
+        z-index: 999;
+      }
+      .nav-links.open { left: 0;}
+      .nav-links li { width: 100%; padding: 0.6em 1em;}
+      .menu-toggle {
+        display: flex;
+        flex-direction: column;
+        width: 30px;
+        height: 24px;
+        justify-content: space-between;
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+      .menu-toggle span {
+        background: white;
+        height: 4px;
+        border-radius: 2px;
+        width: 100%;
+        display: block;
+      }
+      .popup { padding:1rem; }
+      .metrics { font-size:0.98em; }
+      .export-btn { float:none;}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <nav class="navbar">
+    <div class="logo">Kingtech School</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#dashboard">Dashboard</a></li>
+      <li><a href="#students">Students</a></li>
+      <li><a href="#teachers">Teachers</a></li>
+      <li><a href="#classes">Classes</a></li>
+      <li><a href="#announcements">Announcements</a></li>
+    </ul>
+    <button class="menu-toggle" aria-label="Open menu" id="menuToggle">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+</header>
+<main>
+  <section id="dashboard" class="dashboard">
+    <h1>School Dashboard</h1>
+    <div class="dashboard-cards">
+      <div class="card">
+        <div class="count" id="studentCount">0</div>
+        <h2>Students</h2>
+        <p>Registered students in the system</p>
+      </div>
+      <div class="card">
+        <div class="count" id="teacherCount">0</div>
+        <h2>Teachers</h2>
+        <p>Active teachers this semester</p>
+      </div>
+      <div class="card">
+        <div class="count" id="classCount">9</div>
+        <h2>Classes</h2>
+        <p>Total enrolled classes</p>
+      </div>
+    </div>
+    <div class="metrics" id="feesMetrics">
+      <!-- Analytics rendered here -->
+    </div>
+  </section>
+
+  <section class="dashboard">
+    <button class="btn export-btn" onclick="exportStudentsCSV()">Export Students as CSV</button>
+    <span class="analytics-caption"><b>Class-level Fee Analytics</b></span>
+    <table class="class-analytics-table" id="classAnalyticsTable">
+      <thead>
+        <tr>
+          <th>Class</th>
+          <th>Students</th>
+          <th>Total Due</th>
+          <th>Total Paid</th>
+          <th>Balance</th>
+          <th>Paid</th>
+          <th>Partial</th>
+          <th>Unpaid</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Filled dynamically -->
+      </tbody>
+    </table>
+  </section>
+
+  <section id="students" class="dashboard">
+    <h2>Students</h2>
+    <div class="filter-bar">
+      <label for="feesFilter">Filter by Fees Status:</label>
+      <select id="feesFilter" class="filter-select">
+        <option value="all">All</option>
+        <option value="Paid">Paid</option>
+        <option value="Partial">Partial</option>
+        <option value="Unpaid">Unpaid</option>
+      </select>
+    </div>
+    <form class="form-inline" id="studentForm">
+      <input type="text" id="studentName" placeholder="Name" required />
+      <input type="number" id="studentAge" placeholder="Age" min="3" required />
+      <select id="studentClass" required>
+        <option value="">Class</option>
+        <option value="Grade 1">Grade 1</option>
+        <option value="Grade 2">Grade 2</option>
+        <option value="Grade 3">Grade 3</option>
+        <option value="Grade 4">Grade 4</option>
+        <option value="Grade 5">Grade 5</option>
+        <option value="Grade 6">Grade 6</option>
+        <option value="Grade 7">Grade 7</option>
+        <option value="Grade 8">Grade 8</option>
+        <option value="Grade 9">Grade 9</option>
+      </select>
+      <input type="number" id="studentFeesDue" placeholder="Fees Due (KES)" min="1" required />
+      <button class="btn" type="submit">Add Student</button>
+    </form>
+    <table id="studentTable">
+      <caption>Student List</caption>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Class</th>
+          <th>Fees Status</th>
+          <th>Total Due</th>
+          <th>Total Paid</th>
+          <th>Balance</th>
+          <th>Payments</th>
+          <th>Receipt</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Students injected here -->
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Fees Payment Popup -->
+  <div class="popup-bg" id="feesPopupBg">
+    <div class="popup" id="feesPopup">
+      <h3>Payments for <span id="feesPopupStudentName"></span></h3>
+      <form id="feesPaymentForm">
+        <label for="paymentAmount">Amount (KES):</label>
+        <input type="number" id="paymentAmount" min="1" required />
+        <label for="paymentDate">Date:</label>
+        <input type="date" id="paymentDate" required />
+        <button class="btn" type="submit">Save Payment</button>
+        <button type="button" class="popup-close" onclick="closeFeesPopup()">Close</button>
+      </form>
+      <div id="feesPaymentsHistory"></div>
+    </div>
+  </div>
+
+  <!-- Fees Receipt Popup -->
+  <div class="popup-bg" id="receiptPopupBg">
+    <div class="popup" id="receiptPopup">
+      <h3>Payment Receipt</h3>
+      <div class="receipt-area" id="receiptArea"></div>
+      <button type="button" class="btn" onclick="printReceipt()">Print</button>
+      <button type="button" class="popup-close" onclick="closeReceiptPopup()">Close</button>
+    </div>
+  </div>
+
+  <section id="teachers" class="dashboard">
+    <h2>Teachers</h2>
+    <form class="form-inline" id="teacherForm">
+      <input type="text" id="teacherName" placeholder="Name" required />
+      <input type="email" id="teacherEmail" placeholder="Email" required />
+      <input type="text" id="teacherSubject" placeholder="Subject" required />
+      <select id="teacherRole" required>
+        <option value="">Role</option>
+        <option value="Headteacher">Headteacher</option>
+        <option value="Deputy Headteacher">Deputy Headteacher</option>
+        <option value="Class Teacher">Class Teacher</option>
+        <option value="Subject Teacher">Subject Teacher</option>
+        <option value="Assistant Teacher">Assistant Teacher</option>
+        <option value="Other">Other</option>
+      </select>
+      <select id="classTeacherClass" style="display:none;">
+        <option value="">Select Grade</option>
+        <option value="Grade 1">Grade 1</option>
+        <option value="Grade 2">Grade 2</option>
+        <option value="Grade 3">Grade 3</option>
+        <option value="Grade 4">Grade 4</option>
+        <option value="Grade 5">Grade 5</option>
+        <option value="Grade 6">Grade 6</option>
+        <option value="Grade 7">Grade 7</option>
+        <option value="Grade 8">Grade 8</option>
+        <option value="Grade 9">Grade 9</option>
+      </select>
+      <button class="btn" type="submit">Add Teacher</button>
+    </form>
+    <div id="addTeacherAlert"></div>
+    <table id="teacherTable">
+      <caption>Teacher List</caption>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Subject</th>
+          <th>Role</th>
+          <th>Class (if Class Teacher)</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Teachers injected here -->
+      </tbody>
+    </table>
+  </section>
+
+  <section id="classes" class="dashboard">
+    <h2>Classes</h2>
+    <div id="teacherError"></div>
+    <table id="classTable">
+      <caption>Class Overview & Management</caption>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Students</th>
+          <th>Class Teacher</th>
+          <th>Student Leader</th>
+          <th>Change Leader</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Classes will render here -->
+      </tbody>
+    </table>
+  </section>
+
+  <section id="announcements" class="dashboard">
+    <h2>Announcements</h2>
+    <form class="form-inline" id="announceForm">
+      <input type="text" id="announceContent" placeholder="Announcement..." required />
+      <button class="btn" type="submit">Add</button>
+    </form>
+    <div class="announcements" id="announcementList"></div>
+  </section>
+</main>
+<footer>
+  &copy; 2025 EduManage School Management System. All rights reserved.
+</footer>
+
+<div id="toast" class="toast"></div>
+
+<script>
+  const API_BASE = 'http://localhost:3000';
+
+  function showToast(message, isError = false) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = 'toast' + (isError ? ' error' : '');
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2500);
+  }
+
+  const menuToggle = document.getElementById('menuToggle');
+  const navLinks = document.getElementById('navLinks');
+  menuToggle?.addEventListener('click', () => navLinks.classList.toggle('open'));
+  document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => navLinks.classList.remove('open'));
+  });
+
+  let students = [];
+  let teachers = [];
+  let classes = [];
+  let announcements = [];
+
+  // ===== API HELPERS =====
+  // Students
+  async function loadStudentsFromAPI() {
+    try {
+      const res = await fetch(`${API_BASE}/api/students`);
+      const data = await res.json();
+      students = data;
+      renderStudents();
+    } catch (err) {
+      console.error('Failed to load students', err);
+      showToast('Failed to load students', true);
+    }
+  }
+
+  async function createStudentOnAPI(studentPayload) {
+    const res = await fetch(`${API_BASE}/api/students`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(studentPayload)
+    });
+    if (!res.ok) throw new Error('Failed to save student');
+    return res.json();
+  }
+
+  async function updateStudentOnAPI(id, payload) {
+    const res = await fetch(`${API_BASE}/api/students/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      console.error('Update student failed:', res.status, text);
+      throw new Error('Failed to update student');
+    }
+    return res.json();
+  }
+
+  async function addPaymentOnAPI(studentId, paymentPayload) {
+    const res = await fetch(`${API_BASE}/api/students/${studentId}/payments`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(paymentPayload)
+    });
+    if (!res.ok) throw new Error('Failed to save payment');
+    return res.json();
+  }
+
+  async function deleteStudentOnAPI(studentId) {
+    const res = await fetch(`${API_BASE}/api/students/${studentId}`, {
+      method: 'DELETE'
+    });
+    if (!res.ok && res.status !== 204) throw new Error('Failed to delete student');
+  }
+
+  // Teachers
+  async function loadTeachersFromAPI() {
+    try {
+      const res = await fetch(`${API_BASE}/api/teachers`);
+      const data = await res.json();
+      teachers = data;
+      renderTeachers();
+    } catch (err) {
+      console.error('Failed to load teachers', err);
+      showToast('Failed to load teachers', true);
+    }
+  }
+
+  async function createTeacherOnAPI(body) {
+  const res = await fetch('http://localhost:3000/api/teachers', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    const msg = data.error || 'Failed to create teacher';
+    throw new Error(msg);
+  }
+
+  return res.json();
+}
+
+
+  async function updateTeacherOnAPI(id, body) {
+  const res = await fetch(`http://localhost:3000/api/teachers/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    const msg = data.error || 'Failed to update teacher';
+    // Backend message: Class "Grade 4" already has a class teacher (Mr. X).
+    throw new Error(msg);
+  }
+
+  return res.json();
+}
+
+
+  async function deleteTeacherOnAPI(id) {
+    const res = await fetch(`${API_BASE}/api/teachers/${id}`, {
+      method: 'DELETE'
+    });
+    if (!res.ok && res.status !== 204) throw new Error('Failed to delete teacher');
+  }
+
+  // Classes
+  async function loadClassesFromAPI() {
+    try {
+      let res = await fetch(`${API_BASE}/api/classes`);
+      let data = await res.json();
+      if (data.length === 0) {
+        const initRes = await fetch(`${API_BASE}/api/classes/init`, {
+          method: 'POST'
+        });
+        if (initRes.ok) {
+          res = await fetch(`${API_BASE}/api/classes`);
+          data = await res.json();
+        }
+      }
+      classes = data;
+      renderClassTable();
+      renderClassAnalytics();
+    } catch (err) {
+      console.error('Failed to load classes', err);
+      showToast('Failed to load classes', true);
+    }
+  }
+
+  async function updateClassOnAPI(classId, payload) {
+    const res = await fetch(`${API_BASE}/api/classes/${classId}`, {
+      method: 'PATCH',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error('Failed to update class');
+    return res.json();
+  }
+
+  // Announcements
+  async function loadAnnouncementsFromAPI() {
+    try {
+      const res = await fetch(`${API_BASE}/api/announcements`);
+      const data = await res.json();
+      announcements = data;
+      renderAnnouncements();
+    } catch (err) {
+      console.error('Failed to load announcements', err);
+      showToast('Failed to load announcements', true);
+    }
+  }
+
+  async function createAnnouncementOnAPI(payload) {
+    const res = await fetch(`${API_BASE}/api/announcements`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error('Failed to save announcement');
+    return res.json();
+  }
+
+  // ===== FEES & ANALYTICS =====
+  function getFeesStatus(s) {
+    const paid = s.fees.payments.reduce((sum, p) => sum+p.amount, 0);
+    if (paid === 0) return {status:'Unpaid', color:'status-unpaid'};
+    if (paid >= s.fees.due) return {status:'Paid', color:'status-paid'};
+    if (paid > 0 && paid < s.fees.due) return {status:'Partial', color:'status-partial'};
+    return {status:'Unpaid', color:'status-unpaid'};
+  }
+
+  function getSchoolFeesAnalytics() {
+    let totalStudents = students.length;
+    let totalDue = students.reduce((a,s)=>a+s.fees.due,0);
+    let totalPaid = students.reduce((a,s)=>a+s.fees.payments.reduce((sum,p)=>sum+p.amount,0),0);
+    let balanceDue = totalDue-totalPaid;
+    let percentPaid = totalDue>0 ? ((totalPaid/totalDue)*100).toFixed(1) : "0";
+    let paid = students.filter(s => getFeesStatus(s).status === 'Paid').length;
+    let unpaid = students.filter(s => getFeesStatus(s).status === 'Unpaid').length;
+    let partial = students.filter(s => getFeesStatus(s).status === 'Partial').length;
+    return {totalStudents, totalDue, totalPaid, balanceDue, percentPaid, paid, partial, unpaid};
+  }
+
+  function renderFeesMetrics() {
+    const m = getSchoolFeesAnalytics();
+    document.getElementById('feesMetrics').innerHTML =
+      `<span>
+        <b class="metrics-label">Total Fees Due:</b> <span class="metrics-value">KES ${m.totalDue}</span>
+      </span>
+      <span>
+        <b class="metrics-label">Total Paid:</b> <span class="metrics-value">KES ${m.totalPaid}</span>
+      </span>
+      <span>
+        <b class="metrics-label">Balance Due:</b> <span class="metrics-value">KES ${m.balanceDue}</span>
+      </span>
+      <span>
+        <b class="metrics-label">% School Fees Paid:</b> <span class="metrics-value">${m.percentPaid}%</span>
+      </span>
+      <span>
+        <b class="metrics-label">Fully Paid:</b> <span class="metrics-value" style="color:var(--paid);">${m.paid}</span>
+      </span>
+      <span>
+        <b class="metrics-label">Partial:</b> <span class="metrics-value" style="color:var(--partial);">${m.partial}</span>
+      </span>
+      <span>
+        <b class="metrics-label">Unpaid:</b> <span class="metrics-value" style="color:var(--unpaid);">${m.unpaid}</span>
+      </span>`;
+  }
+
+  function getClassAnalytics() {
+    let data = [];
+    classes.forEach(cls => {
+      let s = students.filter(stu => stu.class === cls.name);
+      let num = s.length;
+      let due = s.reduce((a,x) => a + x.fees.due, 0);
+      let paid = s.reduce(
+        (a,x) => a + x.fees.payments.reduce((sum,p)=>sum+p.amount,0),
+        0
+      );
+      let bal = due - paid;
+      let paidCnt = s.filter(stu => getFeesStatus(stu).status === "Paid").length;
+      let partialCnt = s.filter(stu => getFeesStatus(stu).status === "Partial").length;
+      let unpaidCnt = s.filter(stu => getFeesStatus(stu).status === "Unpaid").length;
+      data.push({name:cls.name, num, due, paid, bal, paidCnt, partialCnt, unpaidCnt});
+    });
+    return data;
+  }
+
+  function renderClassAnalytics() {
+    let data = getClassAnalytics();
+    const tbody = document.getElementById('classAnalyticsTable').querySelector('tbody');
+    tbody.innerHTML = "";
+    data.forEach(cls => {
+      let row = document.createElement('tr');
+      row.innerHTML = `<td>${cls.name}</td>
+        <td>${cls.num}</td>
+        <td>KES ${cls.due}</td>
+        <td>KES ${cls.paid}</td>
+        <td>KES ${cls.bal}</td>
+        <td style="color:var(--paid);">${cls.paidCnt}</td>
+        <td style="color:var(--partial);">${cls.partialCnt}</td>
+        <td style="color:var(--unpaid);">${cls.unpaidCnt}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  // Fees popup logic
+  let feesCurrentStudentIdx = null;
+  function openFeesPopup(idx) {
+    feesCurrentStudentIdx = idx;
+    const s = students[idx];
+    document.getElementById('feesPopupStudentName').textContent = s.name;
+    document.getElementById('feesPaymentForm').reset();
+    renderFeesPaymentsHistory(idx);
+    document.getElementById('feesPopupBg').style.display = 'flex';
+  }
+  function closeFeesPopup() {
+    document.getElementById('feesPopupBg').style.display = 'none';
+    feesCurrentStudentIdx = null;
+  }
+  function renderFeesPaymentsHistory(idx) {
+    const s = students[idx];
+    const paidTotal = s.fees.payments.reduce((sum,p)=>sum+p.amount,0);
+    const due = s.fees.due;
+    const container = document.getElementById('feesPaymentsHistory');
+    if (s.fees.payments.length === 0) {
+      container.innerHTML = `<p><b>No payments recorded.</b></p>`;
+      return;
+    }
+    let lines = `<div><b>Total paid:</b> KES ${paidTotal} / <b>Due:</b> KES ${due}</div>`;
+    lines += '<ul>';
+    s.fees.payments.forEach((p,i)=>{ lines += `<li>Paid <b>KES ${p.amount}</b> on <b>${p.date}</b></li>`; });
+    lines += '</ul>';
+    container.innerHTML = lines;
+  }
+  document.getElementById('feesPaymentForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    const amount = parseInt(document.getElementById('paymentAmount').value);
+    const date = document.getElementById('paymentDate').value;
+    if(!amount || !date || feesCurrentStudentIdx === null) return;
+
+    const student = students[feesCurrentStudentIdx];
+    try {
+      const updated = await addPaymentOnAPI(student._id, { amount, date });
+      students[feesCurrentStudentIdx] = updated;
+      renderStudents();
+      renderFeesPaymentsHistory(feesCurrentStudentIdx);
+      this.reset();
+      renderFeesMetrics();
+      renderClassAnalytics();
+      showToast('Payment recorded');
+    } catch (err) {
+      console.error('Failed to save payment', err);
+      showToast('Failed to save payment', true);
+    }
+  });
+
+  document.getElementById('feesFilter').addEventListener('change', function(e){ renderStudents(); });
+
+  // Receipt Popup logic
+  let receiptCurrentStudentIdx = null;
+  function viewReceipt(idx){
+    receiptCurrentStudentIdx = idx;
+    const s = students[idx];
+    let paidTotal = s.fees.payments.reduce((sum,p)=>sum+p.amount,0);
+    let status = getFeesStatus(s).status;
+    let lines = `<b>Student:</b> ${s.name}<br>
+                 <b>Class:</b> ${s.class}<br>
+                 <b>Due Amount:</b> KES ${s.fees.due}<br>
+                 <b>Status:</b> ${status}<br>
+                 <b>Payments:</b><br>`;
+    if(s.fees.payments.length === 0){
+      lines += `<i>No payments recorded.</i>`;
+    } else {
+      lines += "<ul>";
+      s.fees.payments.forEach((p,i)=>{ lines += `<li>KES ${p.amount} on ${p.date}</li>`; });
+      lines += "</ul>";
+    }
+    lines += `<b>Paid Total:</b> KES ${paidTotal}<br>
+              <b>Balance Remaining:</b> KES ${s.fees.due-paidTotal}`;
+    document.getElementById('receiptArea').innerHTML = lines;
+    document.getElementById('receiptPopupBg').style.display = 'flex';
+  }
+  function closeReceiptPopup(){
+    document.getElementById('receiptPopupBg').style.display = 'none';
+    receiptCurrentStudentIdx = null;
+  }
+  function printReceipt(){
+    const printContent = document.getElementById('receiptArea').innerHTML;
+    const printWindow = window.open('', '', 'width=600,height=600');
+    printWindow.document.write('<html><head><title>Payment Receipt</title></head><body>');
+    printWindow.document.write('<h2>EduManage School: Payment Receipt</h2>');
+    printWindow.document.write(printContent);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
+  }
+  window.openFeesPopup = openFeesPopup;
+  window.viewReceipt = viewReceipt;
+  window.closeReceiptPopup = closeReceiptPopup;
+  window.printReceipt = printReceipt;
+
+  // ===== RENDER FUNCTIONS =====
+  function renderStudents() {
+    const tbody = document.getElementById('studentTable').querySelector('tbody');
+    tbody.innerHTML = '';
+    let filter = document.getElementById('feesFilter').value;
+    students.forEach((s, i) => {
+      let feesInfo = getFeesStatus(s);
+      if(filter !== 'all' && feesInfo.status !== filter) return;
+      let paidTotal = s.fees.payments.reduce((sum, p) => sum+p.amount, 0);
+      let paymentBtn = `<button class="btn" onclick="openFeesPopup(${i})">Record/View</button>`;
+      let receiptBtn = `<button class="btn receipt-link" onclick="viewReceipt(${i})">Receipt</button>`;
+      let row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${s.name}</td>
+        <td>${s.age}</td>
+        <td>${s.class}</td>
+        <td><span class="fees-status ${feesInfo.color}">${feesInfo.status}</span></td>
+        <td>KES ${s.fees.due}</td>
+        <td>KES ${paidTotal}</td>
+        <td>KES ${s.fees.due-paidTotal}</td>
+        <td>${paymentBtn}</td>
+        <td>${receiptBtn}</td>
+        <td>
+          <button class="btn" onclick="editStudent(${i})">Edit</button>
+          <button class="btn danger" onclick="deleteStudent(${i})">Delete</button>
+        </td>`;
+      tbody.appendChild(row);
+    });
+    document.getElementById('studentCount').textContent = students.length;
+    classes.forEach((c, idx) => {
+      const classRow = document.getElementById('classTable').querySelectorAll('tbody tr')[idx];
+      if (classRow) {
+        classRow.querySelector('td:nth-child(2)').textContent =
+          students.filter(s => s.class === c.name).length;
+      }
+    });
+    renderFeesMetrics();
+    renderClassAnalytics();
+  }
+
+  async function deleteStudent(i) {
+    const student = students[i];
+    if (!student) return;
+
+    const ok = confirm(`Are you sure you want to delete student "${student.name}"?`);
+    if (!ok) return;
+
+    if (!student._id) {
+      students.splice(i, 1);
+      renderStudents();
+      renderFeesMetrics();
+      renderClassAnalytics();
+      showToast('Student deleted');
+      return;
+    }
+    try {
+      await deleteStudentOnAPI(student._id);
+      students.splice(i, 1);
+      renderStudents();
+      renderFeesMetrics();
+      renderClassAnalytics();
+      showToast('Student deleted');
+    } catch (err) {
+      console.error('Failed to delete student', err);
+      showToast('Failed to delete student', true);
+    }
+  }
+  window.deleteStudent = deleteStudent;
+
+  async function editStudent(i) {
+    const s = students[i];
+    if (!s || !s._id) return;
+
+    const newName = prompt('Student name:', s.name);
+    if (newName === null || !newName.trim()) return;
+
+    const newAgeStr = prompt('Age:', s.age);
+    if (newAgeStr === null) return;
+    const newAge = Number(newAgeStr);
+    if (!isFinite(newAge) || newAge <= 0) {
+      alert('Age must be a valid number.');
+      return;
+    }
+
+    const newClass = prompt('Class (e.g. Grade 1):', s.class);
+    if (newClass === null || !newClass.trim()) return;
+
+    const newFeesStr = prompt('Fees due (KES):', s.fees.due);
+    if (newFeesStr === null) return;
+    const newFees = Number(newFeesStr);
+    if (!isFinite(newFees) || newFees < 0) {
+      alert('Fees due must be a valid number.');
+      return;
+    }
+
+    try {
+      const updated = await updateStudentOnAPI(s._id, {
+        name: newName.trim(),
+        age: newAge,
+        class: newClass.trim(),
+        feesDue: newFees
+      });
+      students[i] = updated;
+      renderStudents();
+      renderClassTable();
+      renderClassAnalytics();
+      renderFeesMetrics();
+      showToast('Student updated successfully');
+    } catch (err) {
+      console.error('Failed to update student', err);
+      showToast('Failed to update student', true);
+    }
+  }
+  window.editStudent = editStudent;
+
+  function renderTeachers() {
+    const tbody = document.getElementById('teacherTable').querySelector('tbody');
+    tbody.innerHTML = '';
+    teachers.forEach((t, i) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${t.name}</td>
+        <td>${t.email || '-'}</td>
+        <td>${t.subject}</td>
+        <td><span class="teacher-role">${t.role}</span></td>
+        <td>${t.classTeacherClass ? t.classTeacherClass : '-'}</td>
+        <td>
+          <button class="btn" onclick="editTeacher(${i})">Edit</button>
+          <button class="btn danger" onclick="deleteTeacher(${i})">Delete</button>
+        </td>`;
+      tbody.appendChild(row);
+    });
+    document.getElementById('teacherCount').textContent = teachers.length;
+    renderClassTable();
+  }
+
+  async function deleteTeacher(i) {
+    const teacher = teachers[i];
+    if (!teacher) return;
+
+    const ok = confirm(`Are you sure you want to delete teacher "${teacher.name}"?`);
+    if (!ok) return;
+
+    if (!teacher._id) {
+      teachers.splice(i, 1);
+      renderTeachers();
+      renderClassTable();
+      showToast('Teacher deleted');
+      return;
+    }
+    try {
+      await deleteTeacherOnAPI(teacher._id);
+      const teacherName = teacher.name;
+      teachers.splice(i, 1);
+      classes.forEach(c => { if(c.teacher === teacherName) c.teacher=''; });
+      renderTeachers();
+      renderClassTable();
+      showToast('Teacher deleted');
+    } catch (err) {
+      console.error('Failed to delete teacher', err);
+      showToast('Failed to delete teacher', true);
+    }
+  }
+  window.deleteTeacher = deleteTeacher;
+
+  async function editTeacher(i) {
+  const t = teachers[i];
+  if (!t || !t._id) return;
+
+  const newName = prompt('Teacher name:', t.name);
+  if (newName === null) return;
+
+  const newEmail = prompt('Email:', t.email || '');
+  if (newEmail === null) return;
+
+  const newSubject = prompt('Subject:', t.subject);
+  if (newSubject === null) return;
+
+  const newRole = prompt(
+    'Role (Headteacher, Deputy Headteacher, Class Teacher, Subject Teacher, Assistant Teacher, Other):',
+    t.role
+  );
+  if (newRole === null) return;
+
+  let newClassTeacherClass = t.classTeacherClass || '';
+  if (newRole === 'Class Teacher') {
+    const cls = prompt(
+      'Class for this teacher (e.g. Grade 1):',
+      t.classTeacherClass || ''
+    );
+    if (cls === null) return;
+    newClassTeacherClass = cls.trim();
+  } else {
+    newClassTeacherClass = '';
+  }
+
+  try {
+    const updated = await updateTeacherOnAPI(t._id, {
+      name: newName.trim(),
+      email: newEmail.trim(),
+      subject: newSubject.trim(),
+      role: newRole.trim(),
+      classTeacherClass: newClassTeacherClass
+    });
+
+    const oldName = t.name;
+    teachers[i] = updated;
+
+    if (updated.role === 'Class Teacher' && updated.classTeacherClass) {
+      const idx = classes.findIndex(c => c.name === updated.classTeacherClass);
+      if (idx !== -1) {
+        const updatedClass = await updateClassOnAPI(classes[idx]._id, {
+          teacher: updated.name
+        });
+        classes[idx] = updatedClass;
+      }
+    } else {
+      for (let index = 0; index < classes.length; index++) {
+        const c = classes[index];
+        if (c.teacher === oldName) {
+          const updatedClass = await updateClassOnAPI(c._id, { teacher: '' });
+          classes[index] = updatedClass;
+        }
+      }
+    }
+
+    renderTeachers();
+    renderClassTable();
+    showToast('Teacher updated successfully');
+  } catch (err) {
+    console.error('Failed to update teacher', err);
+    // Shows: Class "Grade 4" already has a class teacher (Mr. X).
+    showToast(err.message || 'Failed to update teacher', true);
+  }
+}
+window.editTeacher = editTeacher;
+
+
+  function renderAnnouncements() {
+    const annBox = document.getElementById('announcementList');
+    annBox.innerHTML = '';
+    announcements.forEach(a => {
+      let div = document.createElement('div');
+      div.className = 'announcement';
+      const text = a.text || '';
+      if (text.toLowerCase().startsWith('reminder')) {
+        div.innerHTML = `<strong>Reminder:</strong> ${text.substring(9)}`;
+      } else if (text.toLowerCase().startsWith('welcome')) {
+        div.innerHTML = `<strong>Welcome!</strong> ${text.substring(8)}`;
+      } else {
+        div.textContent = text;
+      }
+      annBox.appendChild(div);
+    });
+  }
+
+  function renderClassTable() {
+    const tbody = document.getElementById('classTable').querySelector('tbody');
+    tbody.innerHTML = '';
+    classes.forEach((cls, idx) => {
+      let studentLeader = cls.leader || 'None';
+      let teacherOptions = `<option value="">None</option>`;
+      teachers.forEach(t => {
+        teacherOptions += `<option value="${t.name}"${cls.teacher === t.name ? ' selected' : ''}>${t.name} (${t.role})</option>`;
+      });
+      let row = document.createElement('tr');
+      row.innerHTML =
+        `<td>${cls.name}</td>
+         <td>${students.filter(s => s.class === cls.name).length}</td>
+         <td>
+           <select class="class-edit-select" onchange="setClassTeacher(${idx}, this.value)">
+             ${teacherOptions}
+           </select>
+         </td>
+         <td>${studentLeader}</td>
+         <td>
+           <form class="leader-form-inline" onsubmit="setClassLeader(event,${idx})">
+             <input class="leader-input" type="text" value="${cls.leader || ''}" placeholder="Student Name" required />
+             <button class="btn" type="submit">Save</button>
+           </form>
+         </td>`;
+      tbody.appendChild(row);
+    });
+    document.getElementById('classCount').textContent = classes.length;
+  }
+
+  async function setClassTeacher(classIdx, value) {
+    const teacherError = document.getElementById('teacherError');
+    const cls = classes[classIdx];
+    if (!cls) return;
+
+    if(value === "") {
+      try {
+        const updatedClass = await updateClassOnAPI(cls._id, { teacher: '' });
+        classes[classIdx] = updatedClass;
+        renderClassTable();
+        showToast('Class teacher removed');
+      } catch (err) {
+        console.error('Failed to update class teacher', err);
+        showToast('Failed to update class teacher', true);
+      }
+      return;
+    }
+
+    const teacher = teachers.find(t => t.name === value);
+    if(!teacher) {
+      teacherError.textContent = 'Selected teacher not found.';
+      teacherError.style.display = 'block';
+      return;
+    }
+    teacherError.style.display = 'none';
+
+    try {
+      const updatedClass = await updateClassOnAPI(cls._id, { teacher: teacher.name });
+      classes[classIdx] = updatedClass;
+      renderClassTable();
+      showToast('Class teacher updated');
+    } catch (err) {
+      console.error('Failed to update class teacher', err);
+      showToast('Failed to update class teacher', true);
+    }
+  }
+  window.setClassTeacher = setClassTeacher;
+
+  async function setClassLeader(e, classIdx) {
+    e.preventDefault();
+    const input = e.target.querySelector('.leader-input');
+    const name = input.value.trim();
+    if(!name) return;
+
+    const cls = classes[classIdx];
+    if (!cls) return;
+
+    try {
+      const updatedClass = await updateClassOnAPI(cls._id, { leader: name });
+      classes[classIdx] = updatedClass;
+      renderClassTable();
+      showToast('Class leader updated');
+    } catch (err) {
+      console.error('Failed to update class leader', err);
+      showToast('Failed to update class leader', true);
+    }
+  }
+  window.setClassLeader = setClassLeader;
+
+  document.getElementById('studentForm')
+    .addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('studentName').value.trim();
+      const age = parseInt(document.getElementById('studentAge').value, 10);
+      const sclass = document.getElementById('studentClass').value;
+      const due = parseInt(document.getElementById('studentFeesDue').value, 10);
+      if (!name || !age || !sclass || !due) return;
+
+      try {
+        const saved = await createStudentOnAPI({
+          name,
+          age,
+          class: sclass,
+          feesDue: due
+        });
+        students.push(saved);
+        renderStudents();
+        renderClassTable();
+        renderFeesMetrics();
+        renderClassAnalytics();
+        this.reset();
+        showToast('Student added successfully');
+      } catch (err) {
+        console.error('Failed to save student', err);
+        showToast('Failed to add student', true);
+      }
+    });
+
+  document.getElementById('teacherRole')
+    .addEventListener('change', function(){
+      const classSelect = document.getElementById('classTeacherClass');
+      if(this.value === 'Class Teacher') {
+        classSelect.style.display = 'inline-block';
+      } else {
+        classSelect.style.display = 'none';
+        classSelect.value = '';
+      }
+    });
+
+  document.getElementById('teacherForm')
+    .addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const addAlert = document.getElementById('addTeacherAlert');
+      addAlert.style.display = "none";
+      const name = document.getElementById('teacherName').value.trim();
+      const email = document.getElementById('teacherEmail').value.trim();
+      const subject = document.getElementById('teacherSubject').value.trim();
+      const role = document.getElementById('teacherRole').value;
+      const classTeacherClass = document.getElementById('classTeacherClass').value;
+      if(!name || !email || !subject || !role) return;
+
+      if(role === "Class Teacher" && !classTeacherClass) {
+        addAlert.textContent = "Please select which class this teacher should take.";
+        addAlert.style.display = "block";
+        return;
+      }
+
+      try {
+        const saved = await createTeacherOnAPI({
+          name,
+          email,
+          subject,
+          role,
+          classTeacherClass: role === "Class Teacher" ? classTeacherClass : ''
+        });
+        teachers.push(saved);
+        if (role === "Class Teacher" && classTeacherClass) {
+          const idx = classes.findIndex(c => c.name === classTeacherClass);
+          if (idx !== -1) {
+            const updatedClass = await updateClassOnAPI(classes[idx]._id, { teacher: name });
+            classes[idx] = updatedClass;
+          }
+        }
+        renderTeachers();
+        renderClassTable();
+        this.reset();
+        document.getElementById('classTeacherClass').style.display = "none";
+        showToast('Teacher added successfully');
+      } catch (err) {
+        console.error('Failed to save teacher', err);
+        showToast('Failed to add teacher', true);
+      }
+    });
+
+  document.getElementById('announceForm')
+    .addEventListener('submit', async function(e){
+      e.preventDefault();
+      const text = document.getElementById('announceContent').value.trim();
+      if(!text) return;
+      try {
+        const saved = await createAnnouncementOnAPI({ text });
+        announcements.unshift(saved);
+        renderAnnouncements();
+        this.reset();
+        showToast('Announcement added');
+      } catch (err) {
+        console.error('Failed to save announcement', err);
+        showToast('Failed to add announcement', true);
+      }
+    });
+
+  function exportStudentsCSV() {
+    let csv = "Name,Age,Class,Fees Due,Fees Paid,Fees Status,Payments\n";
+    students.forEach(s => {
+      const paid = s.fees.payments.reduce((sum,p)=>sum+p.amount,0);
+      const status = getFeesStatus(s).status;
+      const payments = s.fees.payments.map(p=>`${p.amount} on ${p.date}`).join(" | ");
+      csv += `"${s.name}",${s.age},"${s.class}",${s.fees.due},${paid},${status},"${payments}"\n`;
+    });
+    const blob = new Blob([csv], {type:"text/csv"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.style.display="none";
+    a.href = url;
+    a.download = "students.csv";
+    document.body.appendChild(a);
+    a.click();
+    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  }
+  window.exportStudentsCSV = exportStudentsCSV;
+
+  (async function init() {
+    await Promise.all([
+      loadClassesFromAPI(),
+      loadTeachersFromAPI(),
+      loadStudentsFromAPI(),
+      loadAnnouncementsFromAPI()
+    ]);
+    renderFeesMetrics();
+    renderClassAnalytics();
+  })();
+</script>
+</body>
+</html>
