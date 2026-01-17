@@ -532,13 +532,13 @@
   </section>
 </main>
 <footer>
-  &copy; 2025 EduManage School Management System. All rights reserved.
+  &copy; 2026 Kingtech School Management System. All rights reserved.
 </footer>
 
 <div id="toast" class="toast"></div>
 
 <script>
-  const API_BASE = 'http://localhost:3000';
+  const API_BASE = 'https://kingtech-school-backend.onrender.com';
 
   function showToast(message, isError = false) {
     const toast = document.getElementById('toast');
@@ -631,7 +631,7 @@
   }
 
   async function createTeacherOnAPI(body) {
-  const res = await fetch('http://localhost:3000/api/teachers', {
+  const res = await fetch('https://kingtech-school-backend.onrender.com/api/teachers', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body)
@@ -648,7 +648,7 @@
 
 
   async function updateTeacherOnAPI(id, body) {
-  const res = await fetch(`http://localhost:3000/api/teachers/${id}`, {
+  const res = await fetch(`https://kingtech-school-backend.onrender.com/api/teachers/${id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body)
